@@ -1,0 +1,48 @@
+---
+- name: Enable services
+  hosts: web
+  become: yes
+  tasks:
+
+    - name: latest vers of httpd and firewalld installed
+      yum:
+        name:
+          - httpd
+
+        state: latest
+
+    - name: test html page install
+      copy:
+        content: " welcome "
+        dest: /var/www/html/index.html
+
+    - name: firewalld enabled and running
+      service:
+        name: firewalld
+        enabled: true
+        state: started
+
+    - name: firewalld permits access to httpd service
+      firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: true
+
+    - name: httpd enable and run
+      service:
+        name: httpd
+        enabled: true
+        state: started
+
+
+- name: test web serv
+  hosts: web
+  become: no
+  tasks:
+
+    - name: connect to web
+      uri:
+        url: http://localhost
+        return_content: yes
+        status_code: 200

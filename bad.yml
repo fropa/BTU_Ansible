@@ -1,0 +1,8 @@
+---
+- name: Not idempotent
+  hosts: web
+  tasks:
+
+    - name: Good example of a bad task
+      shell:
+        echo "nameserver 8.8.8.8" > /etc/resolv.conf
