@@ -1,0 +1,14 @@
+1. შექმენით playbook სადაც აღწერთ შემდეგ ცვლადებს : 
+
+web_pkg - httpd
+web_service - httpd
+python_pkg - python3-PyMySQL
+rule - http
+
+2. შექმენით task სადაც დააინსტალირებთ ზემოთ აღწერილ პაკეტებს.
+
+3. დაწერეთ შემდეგი ტასკი სადაც დასტარტავთ და startup-ში ჩასვამთ httpd სერვისს
+
+4. ფაქტების გამოყენებით /var/www/html/index.html ფაილში ჩაწერეთ ("hostname" - "ip address" has been customized by Ansible.\n)
+
+5. ახალი play და მასში არსებული ახალი ტასკით გადაამოწმეთ წვდომა ვებ სერვერთან (uri, url)
