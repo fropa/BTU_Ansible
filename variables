@@ -1,0 +1,76 @@
+
+- hosts: all
+  vars:
+  user: beso
+  home: /home/beso
+  
+
+- hosts: all
+  vars_files:
+  - vars/users.yml
+
+
+vars/users.yml
+
+user: joe
+home: /home/joe
+
+
+-----
+
+---
+- hosts: web
+  vars:
+    user: beso
+    home: /home/beso
+
+  tasks:
+  - name: Creates the user {{ user }}
+    user:
+      name: "{{ user }}"
+
+
+----
+
+hosts
+
+[datacenter1]
+demo1.example.com
+demo2.example.com
+[datacenter2]
+demo3.example.com
+demo4.example.com
+[datacenters:children]
+datacenter1
+datacenter2
+[datacenters:vars]
+user=beso
+
+
+----
+
+/group_vars/datacenters
+
+/group_vars/datacenter1
+/group_vars/datacenter2
+
+/host_vars/demo1.example.com
+/host_vars/demo2.example.com
+/host_vars/demo3.example.com
+/host_vars/demo4.example.com
+
+----
+
+ansible-playbook main.yml -e "package=apache"
+
+-----
+
+---
+- hosts: all
+  tasks:
+  - name: Prints various Ansible facts
+    debug:
+      msg: >
+        The default IPv4 address of {{ ansible_facts.fqdn }}
+        is {{ ansible_facts.default_ipv4.address }}
+
