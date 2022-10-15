@@ -5,5 +5,5 @@
 
     - name: Good example of module usage
       copy:
-        contenct: nameserver 8.8.8.8
+        content: nameserver 8.8.8.8
         dest: /etc/resolv.conf
