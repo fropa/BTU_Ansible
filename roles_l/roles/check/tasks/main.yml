@@ -1,0 +1,8 @@
+    - name: Check connection
+      become: yes
+      command: curl -k https://localhost
+      register: output
+
+    - name: show the value of output
+      debug: var=output
+

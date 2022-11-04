@@ -1,0 +1,35 @@
+---
+- name: Multi tier deployment example
+  hosts: web
+  become: true
+  vars:
+    file: vars.yaml
+    tasks:
+
+- hosts: web
+  become: true
+  vars:
+    packages: nginx,git,python3-pip,nodejs
+  roles:
+    - role: install
+
+- hosts: web
+  vars:
+    user: nuser
+  roles:
+    - role: adduser
+
+- hosts: web
+  vars:
+    user: nuser
+    appPath: /opt/nodejs/app.js
+  roles:
+    - role: nodejs
+
+- hosts: web
+  roles:
+    - role: nginx
+
+- hosts: web
+  roles:
+    - role: check

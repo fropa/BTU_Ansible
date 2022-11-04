@@ -1,0 +1,31 @@
+    - name: Copy nginx conf
+      copy:
+        src: /etc/ansible/files/nodejs.conf
+        dest: /etc/nginx/conf.d/nodejs.conf
+        owner: nginx
+        group: nginx
+        mode: 0644
+
+
+    - name: Copy cert key
+      copy:
+        src: /etc/ansible/files/nginx-selfsigned.key
+        dest: /etc/ssl/certs/nginx-selfsigned.key
+        owner: nginx
+        group: nginx
+        mode: 0644
+
+    - name: Copy cert
+      copy:
+        src: /etc/ansible/files/nginx-selfsigned.crt
+        dest: /etc/ssl/certs/nginx-selfsigned.crt
+        owner: nginx
+        group: nginx
+        mode: 0644
+
+    - name: Start and enable nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+

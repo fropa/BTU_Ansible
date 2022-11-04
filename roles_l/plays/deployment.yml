@@ -1,0 +1,100 @@
+---
+- name: Multi tier deployment example
+  hosts: web
+  become: true
+  vars:
+    packages: nginx,git,python3-pip,nodejs
+    user: nuser
+    appPath: /opt/nodejs/app.js
+    nodeService: /usr/local/bin/pm2
+  tasks:
+    - name: Install {{ packages }}
+      ansible.builtin.package:
+        name: "{{ packages }}"
+        state: present
+
+    - name: Create user
+      user:
+        name: "{{ user }}"
+
+    - name: Install pm2 service for automation nodejs
+      npm:
+        name: pm2
+        global: yes
+        state: latest
+   
+    - name: Create dir for app
+      file:
+        path: /opt/nodejs
+        state: directory
+        recurse: yes
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+
+    - name: Copy app files
+      copy:
+        src: /etc/ansible/files/app.js
+        dest: /opt/nodejs/app.js
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: 0644
+
+
+    - name: Set httpd permission for nginx
+      seboolean:
+        name: httpd_can_network_connect
+        state: yes
+        persistent: yes
+
+    - name: Start nodejs app, by pm2 (nonidempotent)
+      become: yes
+      #      become_user: "{{ user }}"
+      #      command: /usr/local/bin/pm2 start {{ appPath }}
+      command: /usr/local/bin/pm2 list
+      register: stat
+
+
+    - name: show the start status
+      debug: var=stat
+
+      #      command: "{{ nodeService }} list"
+
+    - name: Copy nginx conf
+      copy:
+        src: /etc/ansible/files/nodejs.conf
+        dest: /etc/nginx/conf.d/nodejs.conf
+        owner: nginx
+        group: nginx
+        mode: 0644
+
+
+    - name: Copy cert key
+      copy:
+        src: /etc/ansible/files/nginx-selfsigned.key
+        dest: /etc/ssl/certs/nginx-selfsigned.key
+        owner: nginx
+        group: nginx
+        mode: 0644
+
+    - name: Copy cert
+      copy:
+        src: /etc/ansible/files/nginx-selfsigned.crt
+        dest: /etc/ssl/certs/nginx-selfsigned.crt
+        owner: nginx
+        group: nginx
+        mode: 0644
+
+    - name: Start and enable nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+    
+    - name: Check connection
+      become: yes
+      command: curl -k https://localhost
+      register: output
+
+    - name: show the value of output
+      debug: var=output
