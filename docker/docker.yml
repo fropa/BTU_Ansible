@@ -1,0 +1,10 @@
+---
+- name: docker
+  hosts: web
+  tasks:
+    - name: Create a data container
+      community.docker.docker_container:
+        name: mydata
+        image: busybox
+        volumes:
+        - /data
